@@ -15,7 +15,7 @@ public class GCCallerThread implements Runnable {
 
     @Override
     public void run() {
-        GCCaller.logger.info("starting garbage collector");
+        GCCaller.LOGGER.info("starting garbage collector");
         long start = System.nanoTime();
         System.gc();
         try {
@@ -23,7 +23,7 @@ public class GCCallerThread implements Runnable {
         } catch (InterruptedException e) {
         }
         System.gc();
-        GCCaller.logger.info("garbage collector ended " + ((System.nanoTime() - start) / 1000000) + "ms");
+        GCCaller.LOGGER.info("garbage collector ended " + ((System.nanoTime() - start) / 1000000) + "ms");
     }
 
     public static GCCallerThread getInstance() {
