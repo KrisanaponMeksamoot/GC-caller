@@ -4,16 +4,18 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.client.event.InputUpdateEvent;
-import org.apache.logging.log4j.Logger;
-
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.client.event.InputUpdateEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
 public class GCCaller {
@@ -23,13 +25,15 @@ public class GCCaller {
     @Instance
     public static GCCaller instance;
 
-    private static KeyBinding keyBinding;
+    protected static KeyBinding keyBinding;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
         keyBinding = new KeyBinding("category.gc_caller.name", 0, "key.gc_caller.call_gc");
         ClientRegistry.registerKeyBinding(keyBinding);
+        GCCallerThread.getInstance();
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @EventHandler
@@ -40,21 +44,27 @@ public class GCCaller {
     public void postInit(FMLPostInitializationEvent event) {
     }
 
-    @SubscribeEvent
+    @EventHandler
     public void onAvailable(FMLLoadCompleteEvent event) {
         GCCallerThread.gc();
     }
 
     @SubscribeEvent
     public void onKeyPressed(InputUpdateEvent event) {
-        if (keyBinding.isPressed()) {
+        if (GCCaller.keyBinding.isPressed()) {
             if (event.getEntityPlayer() == null) {
                 GCCallerThread.gc();
             } else if (GCCallerThread.gc())
-                event.getEntityPlayer().sendMessage(new TextComponentTranslation("message.gc_caller.gc_called"));
+                event.getEntityPlayer().sendStatusMessage(new TextComponentTranslation("message.gc_caller.gc_called"),
+                        true);
             else
                 event.getEntityPlayer()
-                        .sendMessage(new TextComponentTranslation("message.gc_caller.gc_already_called"));
+                        .sendStatusMessage(new TextComponentTranslation("message.gc_caller.gc_already_called"), true);
         }
+    }
+
+    @SubscribeEvent
+    public void playerLogin(PlayerLoggedInEvent event) {
+        GCCallerThread.gc();
     }
 }
