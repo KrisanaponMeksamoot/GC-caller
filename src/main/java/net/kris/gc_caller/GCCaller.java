@@ -1,70 +1,57 @@
 package net.kris.gc_caller;
 
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.client.event.InputUpdateEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
-@Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
+// The value here should match an entry in the META-INF/mods.toml file
+@Mod("gc_caller")
 public class GCCaller {
+    // Directly reference a log4j logger.
+    protected static final Logger LOGGER = LogManager.getLogger();
 
-    protected static Logger logger;
+    private static KeyBinding keyBinding;
 
-    @Instance
-    public static GCCaller instance;
-
-    protected static KeyBinding keyBinding;
-
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        logger = event.getModLog();
-        keyBinding = new KeyBinding("category.gc_caller.name", 0, "key.gc_caller.call_gc");
-        ClientRegistry.registerKeyBinding(keyBinding);
+    public GCCaller() {
         GCCallerThread.getInstance();
+        // Register the doClientStuff method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+
+        // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    @EventHandler
-    public void init(FMLInitializationEvent event) {
-    }
-
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-    }
-
-    @EventHandler
-    public void onAvailable(FMLLoadCompleteEvent event) {
-        GCCallerThread.gc();
+    private void doClientStuff(final FMLClientSetupEvent event) {
+        keyBinding = new KeyBinding("key.gc_caller.call_gc", GLFW.GLFW_KEY_UNKNOWN, "category.gc_caller.name");
+        ClientRegistry.registerKeyBinding(keyBinding);
     }
 
     @SubscribeEvent
     public void onKeyPressed(InputUpdateEvent event) {
-        if (GCCaller.keyBinding.isPressed()) {
-            if (event.getEntityPlayer() == null) {
+        if (keyBinding.isDown()) {
+            if (event.getPlayer() == null) {
                 GCCallerThread.gc();
-            } else if (GCCallerThread.gc())
-                event.getEntityPlayer().sendStatusMessage(new TextComponentTranslation("message.gc_caller.gc_called"),
+            } else if (GCCallerThread.gc()) {
+                event.getPlayer().displayClientMessage(new TranslationTextComponent("message.gc_caller.gc_called"),
                         true);
-            else
-                event.getEntityPlayer()
-                        .sendStatusMessage(new TextComponentTranslation("message.gc_caller.gc_already_called"), true);
+            } else {
+                event.getPlayer().displayClientMessage(
+                        new TranslationTextComponent("message.gc_caller.gc_already_called"), true);
+            }
         }
     }
 
-    @SubscribeEvent
-    public void playerLogin(PlayerLoggedInEvent event) {
+    public void onAvailable(FMLLoadCompleteEvent event) {
         GCCallerThread.gc();
     }
 }
