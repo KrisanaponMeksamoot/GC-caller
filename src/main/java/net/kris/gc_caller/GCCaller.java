@@ -30,7 +30,7 @@ public class GCCaller {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
-        keyBinding = new KeyBinding("category.gc_caller.name", 0, "key.gc_caller.call_gc");
+        keyBinding = new KeyBinding("key.gc_caller.call_gc", 0, "category.gc_caller.name");
         ClientRegistry.registerKeyBinding(keyBinding);
         GCCallerThread.getInstance();
         MinecraftForge.EVENT_BUS.register(this);
