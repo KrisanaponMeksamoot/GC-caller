@@ -1,0 +1,16 @@
+[
+{
+  "modid": "gc_caller",
+  "name": "Garbage Collector Caller",
+  "description": "Remove trash from your RAM!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/KrisanaponMeksamoot/GC-caller",
+  "updateUrl": "",
+  "authorList": ["Krisanapon Meksamoot"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
