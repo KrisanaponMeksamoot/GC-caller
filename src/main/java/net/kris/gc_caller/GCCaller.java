@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GCCaller implements ClientModInitializer {
-	public static String modid = "gc_caller";
-	public static final Logger LOGGER = LoggerFactory.getLogger(modid);
+	public static final String MODID = "gc_caller";
+	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
 	private KeyBinding keyBinding;
 
