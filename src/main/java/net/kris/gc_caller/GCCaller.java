@@ -1,6 +1,8 @@
 package net.kris.gc_caller;
 
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -51,7 +53,18 @@ public class GCCaller {
         }
     }
 
+    @SubscribeEvent
     public void onAvailable(FMLLoadCompleteEvent event) {
+        GCCallerThread.gc();
+    }
+
+    @SubscribeEvent
+    public void playerLogin(PlayerLoggedInEvent event) {
+        GCCallerThread.gc();
+    }
+
+    @SubscribeEvent
+    public void playerLogout(PlayerLoggedOutEvent event) {
         GCCallerThread.gc();
     }
 }
