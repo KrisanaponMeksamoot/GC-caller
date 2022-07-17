@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "gc_caller",
+  "version": "${version}",
+
+  "name": "Garbage Collector Caller",
+  "description": "Remove trash from your RAM!",
+  "authors": [
+    "Krisanapon Meksamoot"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "Unlicensed",
+  "icon": "assets/gc_caller/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "net.kris.gc_caller.GCCaller"
+    ]
+  },
+  "mixins": [
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.6",
+    "fabric": "*",
+    "minecraft": "~1.19",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
