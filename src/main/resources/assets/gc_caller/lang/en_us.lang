@@ -1,0 +1,4 @@
+message.gc_caller.gc_called=Garbage Collector Called
+message.gc_caller.gc_already_called=Garbage Collector already Called
+key.gc_caller.call_gc=Call Garbage Collector
+category.gc_caller.name=Garbage Collector Caller
