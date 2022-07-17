@@ -35,6 +35,9 @@ public class GCCaller implements ClientModInitializer {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			GCCallerThread.gc();
 		});
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			GCCallerThread.gc();
+		});
 	}
 
 	private void onEndClientTick(MinecraftClient client) {
