@@ -33,9 +33,7 @@ credits="" #optional
 # A text field displayed in the mod UI
 authors="Krisanapon Meksamoot" #optional
 # The description text for the mod (multi line!) (#mandatory)
-description='''
-Remove trash from your RAM!
-'''
+description="Remove trash from your RAM!"
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.gc_caller]] #optional
     # the modid of the dependency
